@@ -6,8 +6,7 @@ import { MemberEntity } from './MemberEntity';
 @Entity()
 export class UserEntity
   extends Doc
-  implements
-    Pick<User, 'username' | 'discriminator' | 'avatar' | 'defaultAvatarURL'> {
+  implements Pick<User, 'username' | 'discriminator' | 'avatar' | 'defaultAvatarURL'> {
   @Column()
   avatar!: string;
 
@@ -22,4 +21,14 @@ export class UserEntity
 
   @OneToMany(() => MemberEntity, (me) => me.user)
   members!: MemberEntity[];
+
+  static $create({ id, avatar, username, discriminator, defaultAvatarURL }: User): UserEntity {
+    return UserEntity.create({
+      id,
+      avatar: avatar ?? defaultAvatarURL,
+      username,
+      discriminator,
+      defaultAvatarURL,
+    });
+  }
 }

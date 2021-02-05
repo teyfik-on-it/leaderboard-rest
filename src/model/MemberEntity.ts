@@ -3,12 +3,10 @@ import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
 import { VoiceStateEntity } from './VoiceStateEntity';
 import { GuildEntity } from './GuildEntity';
 import { UserEntity } from './UserEntity';
-import { GuildMember } from 'discord.js';
+import { GuildMember, VoiceState } from 'discord.js';
 
 @Entity()
-export class MemberEntity
-  extends Doc
-  implements Pick<GuildMember, 'displayName' | 'displayHexColor'> {
+export class MemberEntity extends Doc implements Pick<GuildMember, 'displayName' | 'displayHexColor'> {
   @Column()
   displayName!: string;
 
@@ -18,9 +16,20 @@ export class MemberEntity
   @ManyToOne(() => UserEntity, (ue) => ue.members, { cascade: true })
   user!: UserEntity;
 
-  @OneToOne(() => GuildEntity, (ge) => ge.members)
+  @OneToOne(() => VoiceStateEntity, (vse) => vse.member, { cascade: true })
+  voiceState!: VoiceStateEntity;
+
+  @ManyToOne(() => GuildEntity, (ge) => ge.members)
   guild!: GuildEntity;
 
-  @OneToOne(() => VoiceStateEntity, (vse) => vse.member, { cascade: true })
-  voiceStates!: VoiceStateEntity[];
+  static $create({ id, displayName, displayHexColor, guild, user }: GuildMember, voiceState: VoiceState): MemberEntity {
+    return MemberEntity.create({
+      id,
+      displayName,
+      displayHexColor,
+      guild: GuildEntity.$create(guild),
+      user: UserEntity.$create(user),
+      voiceState: VoiceStateEntity.$create(voiceState),
+    });
+  }
 }
