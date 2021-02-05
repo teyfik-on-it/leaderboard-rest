@@ -2,7 +2,7 @@ import { Doc } from './Doc';
 import { Entity, ManyToOne, OneToOne } from 'typeorm';
 import { GuildEntity } from './GuildEntity';
 import { MemberEntity } from './MemberEntity';
-import { JoinColumn } from 'typeorm/browser';
+import { JoinColumn } from 'typeorm';
 
 @Entity()
 export class VoiceStateEntity extends Doc {
