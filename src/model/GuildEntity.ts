@@ -10,7 +10,7 @@ export class GuildEntity extends Doc implements Pick<Guild, 'name' | 'icon'> {
   name!: string;
 
   @Column()
-  icon!: string | null;
+  icon!: string;
 
   @ManyToMany(() => MemberEntity, (me) => me.guilds)
   members!: MemberEntity[];
