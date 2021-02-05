@@ -5,20 +5,21 @@ import { GuildEntity } from './model/GuildEntity';
 import { VoiceStateEntity } from './model/VoiceStateEntity';
 import { VoiceChannel } from 'discord.js';
 import { MemberEntity } from './model/MemberEntity';
+import bootstrap from './bootstrap';
 
 if (null == environment.token) {
   throw new Error('Token is not defined');
 }
 
-createConnection().then(() => {
+createConnection().then(async () => {
   console.log('Initialized DB connection');
+
+  await VoiceStateEntity.remove(await VoiceStateEntity.find());
+
+  console.log('Flushed database');
 
   client.on('ready', async () => {
     console.log('Client is ready now');
-
-    await VoiceStateEntity.remove(await VoiceStateEntity.find());
-
-    console.log('Flushed database');
 
     const voiceStates = client.guilds.cache
       .map((guild) =>
@@ -47,4 +48,6 @@ createConnection().then(() => {
 
     console.log('Started to listening voice state updates');
   });
+
+  await bootstrap();
 });
