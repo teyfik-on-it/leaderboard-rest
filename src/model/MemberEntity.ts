@@ -3,7 +3,7 @@ import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
 import { VoiceStateEntity } from './VoiceStateEntity';
 import { GuildEntity } from './GuildEntity';
 import { UserEntity } from './UserEntity';
-import { GuildMember, VoiceState } from 'discord.js';
+import { GuildMember } from 'discord.js';
 
 @Entity()
 export class MemberEntity extends Doc implements Pick<GuildMember, 'displayName' | 'displayHexColor'> {
@@ -22,14 +22,18 @@ export class MemberEntity extends Doc implements Pick<GuildMember, 'displayName'
   @ManyToOne(() => GuildEntity, (ge) => ge.members)
   guild!: GuildEntity;
 
-  static $create({ id, displayName, displayHexColor, guild, user }: GuildMember, voiceState: VoiceState): MemberEntity {
+  static $create({ id, displayName, displayHexColor, guild, user, voice }: GuildMember): MemberEntity {
+    if (null == voice) {
+      throw new Error('Can not create GuildMember without a VoiceState');
+    }
+
     return MemberEntity.create({
       id,
       displayName,
       displayHexColor,
       guild: GuildEntity.$create(guild),
       user: UserEntity.$create(user),
-      voiceState: VoiceStateEntity.$create(voiceState),
+      voiceState: VoiceStateEntity.$create(voice),
     });
   }
 }
