@@ -9,9 +9,9 @@ export class UserEntity
   implements
     Pick<User, 'username' | 'discriminator' | 'avatar' | 'defaultAvatarURL'> {
   @Column()
-  avatar!: string | null;
+  avatar!: string;
 
-  @Column()
+  @Column({ nullable: true })
   username!: string;
 
   @Column()
